@@ -12,6 +12,5 @@ public class TikfinityMod {
 
     public TikfinityMod() {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, ModConfig.SPEC);
-        //LOGGER.error("Tikfinity mod loaded. Port: {}", ModConfig.PORT.get());
     }
 }

@@ -22,7 +22,7 @@ public class CommandExecutor {
         PlayerList playerList = server.getPlayerList();
         if (playerList.getPlayers().isEmpty()) return;
 
-        ServerPlayer player = playerList.getPlayers().get(0); // 1er joueur connecté
+        ServerPlayer player = playerList.getPlayers().get(0);
         if (player == null) return;
 
         CommandSourceStack commandSource = player.createCommandSourceStack();
