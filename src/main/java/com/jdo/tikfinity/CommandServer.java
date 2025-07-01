@@ -3,6 +3,8 @@ package com.jdo.tikfinity;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.commons.io.IOUtils;
@@ -18,14 +20,12 @@ import java.nio.charset.StandardCharsets;
 public class CommandServer {
     private final CommandExecutor executor;
     private HttpServer server = null;
-    private MinecraftServer minecraftServer;
 
     public CommandServer(CommandExecutor executor) {
         this.executor = executor;
     }
 
-    public void startServer(MinecraftServer minecraftServer) {
-        this.minecraftServer = minecraftServer;
+    public void startServer() {
         int port = ModConfig.PORT.get();
         TikfinityMod.LOGGER.error("Tikfinity mod loaded. Port: {}", port);
         if (server == null) {
@@ -77,6 +77,7 @@ public class CommandServer {
         private void handleExecute(HttpExchange t) throws IOException {
             InputStream reqStream = t.getRequestBody();
             String requestString = IOUtils.toString(reqStream, StandardCharsets.UTF_8);
+            TikfinityMod.LOGGER.error("requestString: {}", requestString);
             String command = requestString.contains("command=")
                     ? URLDecoder.decode(requestString.split("=")[1], StandardCharsets.UTF_8)
                     : "";
@@ -95,13 +96,9 @@ public class CommandServer {
             String playerName = null;
 
             try {
-                if (minecraftServer != null) {
-                    var playerList = minecraftServer.getPlayerList().getPlayers();
-                    if (!playerList.isEmpty()) {
-                        ServerPlayer player = playerList.get(0);
-                        playerName = player.getName().getString();
-                    }
-                }
+                Minecraft mc = Minecraft.getInstance();
+                LocalPlayer player = mc.player;
+                playerName = player.getName().getString();
             } catch (Exception ignored) {}
 
             t.getResponseHeaders().add("Content-Type", "application/json");

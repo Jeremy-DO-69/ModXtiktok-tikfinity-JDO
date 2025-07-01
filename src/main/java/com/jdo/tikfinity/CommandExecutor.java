@@ -1,5 +1,7 @@
 package com.jdo.tikfinity;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -9,24 +11,20 @@ import net.minecraft.commands.Commands;
 import java.util.Arrays;
 
 public class CommandExecutor {
-
-    private final MinecraftServer server;
-
-    public CommandExecutor(MinecraftServer server) {
-        this.server = server;
+    public CommandExecutor() {
     }
-
     public void execute(String command) {
         if (command == null || command.trim().isEmpty()) return;
-        TikfinityMod.LOGGER.error(command);
-        PlayerList playerList = server.getPlayerList();
-        if (playerList.getPlayers().isEmpty()) return;
 
-        ServerPlayer player = playerList.getPlayers().get(0);
-        if (player == null) return;
+        TikfinityMod.LOGGER.error("Executing command (client): " + command);
 
-        CommandSourceStack commandSource = player.createCommandSourceStack();
-        Commands commandDispatcher = server.getCommands();
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+
+        if (player == null || mc.level == null) {
+            TikfinityMod.LOGGER.error("No player or world loaded");
+            return;
+        }
 
         String[] commands = Arrays.stream(command.split("\n"))
                 .map(String::trim)
@@ -34,10 +32,11 @@ public class CommandExecutor {
                 .toArray(String[]::new);
 
         for (String cmd : commands) {
+            TikfinityMod.LOGGER.error("Sending command: /" + cmd);
             try {
-                commandDispatcher.performPrefixedCommand(commandSource, cmd);
+                player.connection.sendCommand(cmd);
             } catch (Exception e) {
-                TikfinityMod.LOGGER.error("Failed to execute command '{}': {}", cmd, e.getMessage());
+                TikfinityMod.LOGGER.error("Failed to send command '{}': {}", cmd, e.getMessage());
             }
         }
     }

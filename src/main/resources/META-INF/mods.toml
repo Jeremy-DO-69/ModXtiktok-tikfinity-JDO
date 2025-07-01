@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[47,)"
-license="MIT"
+license = "Custom - No modification, redistribution only in original compiled form."
 
 [[mods]]
 modId="tikfinity"
