@@ -20,9 +20,7 @@ public class TikfinityServerEvents {
 
         if (!serverStarted && mc.level != null && mc.player != null) {
             TikfinityMod.LOGGER.info("🔌 Starting HTTP/WebSocket server on CLIENT for player: " + mc.player.getName().getString());
-
             TikfinityClient.initWebServer(); // 🔥 Lancement du serveur ici
-
             serverStarted = true;
         }
 
